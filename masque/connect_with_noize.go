@@ -13,7 +13,7 @@ import (
 	connectip "github.com/Diniboy1123/connect-ip-go"
 	"github.com/quic-go/quic-go"
 	"github.com/quic-go/quic-go/http3"
-	"github.com/voidr3aper-anon/Vwarp/masque/noize"
+	"github.com/mk990/Vwarp/masque/noize"
 	"github.com/yosida95/uritemplate/v3"
 )
 

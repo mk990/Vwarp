@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/noql-net/certpool"
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/engine"
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/statute"
-	"github.com/voidr3aper-anon/Vwarp/warp"
+	"github.com/mk990/Vwarp/ipscanner/engine"
+	"github.com/mk990/Vwarp/ipscanner/statute"
+	"github.com/mk990/Vwarp/warp"
 )
 
 type IPScanner struct {

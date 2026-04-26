@@ -10,8 +10,8 @@ import (
 	"encoding/binary"
 	"testing"
 
-	"github.com/voidr3aper-anon/Vwarp/wireguard/conn"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/tun/tuntest"
+	"github.com/mk990/Vwarp/wireguard/conn"
+	"github.com/mk990/Vwarp/wireguard/tun/tuntest"
 )
 
 func TestCurveWrappers(t *testing.T) {

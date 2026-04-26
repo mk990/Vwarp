@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/masque/noize"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/preflightbind"
+	"github.com/mk990/Vwarp/masque/noize"
+	"github.com/mk990/Vwarp/wireguard/preflightbind"
 )
 
 // ConfigValidator provides validation for unified configurations

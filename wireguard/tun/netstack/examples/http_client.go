@@ -13,9 +13,9 @@ import (
 	"net/http"
 	"net/netip"
 
-	"github.com/voidr3aper-anon/Vwarp/wireguard/conn"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/device"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/tun/netstack"
+	"github.com/mk990/Vwarp/wireguard/conn"
+	"github.com/mk990/Vwarp/wireguard/device"
+	"github.com/mk990/Vwarp/wireguard/tun/netstack"
 )
 
 func main() {

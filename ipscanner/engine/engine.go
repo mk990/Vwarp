@@ -7,9 +7,9 @@ import (
 	"net/netip"
 	"sync"
 
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/iterator"
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/ping"
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/statute"
+	"github.com/mk990/Vwarp/ipscanner/iterator"
+	"github.com/mk990/Vwarp/ipscanner/ping"
+	"github.com/mk990/Vwarp/ipscanner/statute"
 )
 
 type Engine struct {

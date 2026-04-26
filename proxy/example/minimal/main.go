@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/mixed"
+	"github.com/mk990/Vwarp/proxy/pkg/mixed"
 )
 
 func main() {

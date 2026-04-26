@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/masque/noize"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/preflightbind"
+	"github.com/mk990/Vwarp/masque/noize"
+	"github.com/mk990/Vwarp/wireguard/preflightbind"
 )
 
 // UnifiedNoizeConfig represents the complete configuration for both WireGuard and MASQUE obfuscation

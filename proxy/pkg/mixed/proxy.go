@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"net"
 
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/http"
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/socks4"
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/socks5"
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/statute"
+	"github.com/mk990/Vwarp/proxy/pkg/http"
+	"github.com/mk990/Vwarp/proxy/pkg/socks4"
+	"github.com/mk990/Vwarp/proxy/pkg/socks5"
+	"github.com/mk990/Vwarp/proxy/pkg/statute"
 )
 
 type userHandler func(request *statute.ProxyRequest) error

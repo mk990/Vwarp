@@ -11,7 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/wireguard/replay"
+	"github.com/mk990/Vwarp/wireguard/replay"
 )
 
 /* Due to limitations in Go and /x/crypto there is currently

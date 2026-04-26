@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/wireguard/conn"
+	"github.com/mk990/Vwarp/wireguard/conn"
 )
 
 type Peer struct {

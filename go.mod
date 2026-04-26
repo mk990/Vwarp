@@ -1,4 +1,4 @@
-module github.com/voidr3aper-anon/Vwarp
+module github.com/mk990/Vwarp
 
 go 1.26
 

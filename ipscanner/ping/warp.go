@@ -13,7 +13,7 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/statute"
+	"github.com/mk990/Vwarp/ipscanner/statute"
 
 	"github.com/flynn/noise"
 	"golang.org/x/crypto/blake2s"

@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/mixed"
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/statute"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/device"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/tun/netstack"
+	"github.com/mk990/Vwarp/proxy/pkg/mixed"
+	"github.com/mk990/Vwarp/proxy/pkg/statute"
+	"github.com/mk990/Vwarp/wireguard/device"
+	"github.com/mk990/Vwarp/wireguard/tun/netstack"
 )
 
 // VirtualTun stores a reference to netstack network and DNS configuration

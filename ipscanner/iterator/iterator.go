@@ -8,7 +8,7 @@ import (
 	"net/netip"
 	"sync"
 
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/statute"
+	"github.com/mk990/Vwarp/ipscanner/statute"
 )
 
 // LCG represents a linear congruential generator with full period.

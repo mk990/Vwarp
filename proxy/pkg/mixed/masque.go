@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"net"
 
-	"github.com/voidr3aper-anon/Vwarp/masque"
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/statute"
+	"github.com/mk990/Vwarp/masque"
+	"github.com/mk990/Vwarp/proxy/pkg/statute"
 )
 
 // MasqueDialer wraps a MASQUE adapter to provide ProxyDialFunc functionality

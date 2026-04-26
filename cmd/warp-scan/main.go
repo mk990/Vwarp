@@ -16,9 +16,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/ipscanner"
-	"github.com/voidr3aper-anon/Vwarp/masque"
-	"github.com/voidr3aper-anon/Vwarp/warp"
+	"github.com/mk990/Vwarp/ipscanner"
+	"github.com/mk990/Vwarp/masque"
+	"github.com/mk990/Vwarp/warp"
 
 	"github.com/carlmjohnson/versioninfo"
 	"github.com/fatih/color"

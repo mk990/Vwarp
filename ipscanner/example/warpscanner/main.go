@@ -10,9 +10,9 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/rodaine/table"
-	"github.com/voidr3aper-anon/Vwarp/ipscanner"
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/statute"
-	"github.com/voidr3aper-anon/Vwarp/warp"
+	"github.com/mk990/Vwarp/ipscanner"
+	"github.com/mk990/Vwarp/ipscanner/statute"
+	"github.com/mk990/Vwarp/warp"
 )
 
 var (

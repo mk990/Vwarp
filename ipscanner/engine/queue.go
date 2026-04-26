@@ -5,7 +5,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/voidr3aper-anon/Vwarp/ipscanner/statute"
+	"github.com/mk990/Vwarp/ipscanner/statute"
 )
 
 type IPQueue struct {

@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/voidr3aper-anon/Vwarp/masque"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/tun"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/tun/netstack"
+	"github.com/mk990/Vwarp/masque"
+	"github.com/mk990/Vwarp/wireguard/tun"
+	"github.com/mk990/Vwarp/wireguard/tun/netstack"
 )
 
 // min returns the smaller of two integers

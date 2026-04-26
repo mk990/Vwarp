@@ -8,7 +8,7 @@ import (
 	"log/slog"
 	"net"
 
-	"github.com/voidr3aper-anon/Vwarp/proxy/pkg/statute"
+	"github.com/mk990/Vwarp/proxy/pkg/statute"
 )
 
 // Server is accepting connections and handling the details of the SOCKS5 protocol

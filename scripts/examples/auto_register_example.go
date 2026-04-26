@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/voidr3aper-anon/Vwarp/masque"
-	"github.com/voidr3aper-anon/Vwarp/warp"
+	"github.com/mk990/Vwarp/masque"
+	"github.com/mk990/Vwarp/warp"
 )
 
 // Example 1: Auto-registration with MASQUE (like masque-plus)

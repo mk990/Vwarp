@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/voidr3aper-anon/Vwarp/masque/noize"
-	"github.com/voidr3aper-anon/Vwarp/wireguard/preflightbind"
+	"github.com/mk990/Vwarp/masque/noize"
+	"github.com/mk990/Vwarp/wireguard/preflightbind"
 )
 
 // ConfigLoader handles loading and merging configurations from various sources
