@@ -249,10 +249,8 @@ func (c *rootConfig) exec(ctx context.Context, args []string) error {
 		fatal(l, errors.New("can't use masque-preferred and cfon at the same time"))
 	}
 
-	if c.masque && c.endpoint == "" {
-		// If no endpoint is provided in MASQUE mode, scan for one
-		l.Info("no endpoint specified, scanning for endpoints...")
-		c.scan = true
+	if c.masque && c.endpoint == "" && c.scan {
+		l.Info("scan mode enabled for MASQUE endpoint discovery")
 	}
 
 	if c.v4 && c.v6 {

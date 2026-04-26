@@ -559,18 +559,19 @@ func runWarpWithMasque(ctx context.Context, l *slog.Logger, opts WarpOptions, en
 	// Check network MTU compatibility for MASQUE
 	iputils.DetectAndCheckMTUForMasque(l)
 
-	// Convert endpoint to MASQUE endpoint (port 443)
-	// The endpoint may be from scanner (port 2408) or user-provided (any port)
+	// Convert endpoint to MASQUE endpoint (port 443).
+	// Empty endpoint means the adapter will use its own registered EndpointV4.
 	var masqueEndpoint string
-	l.Info("using endpoint as MASQUE server", "endpoint", endpoint)
-	if host, _, err := net.SplitHostPort(endpoint); err == nil {
-		// Successfully split, use the host with port 443
-		masqueEndpoint = net.JoinHostPort(host, "443")
-		l.Debug("Converted endpoint to MASQUE endpoint", "from", endpoint, "to", masqueEndpoint)
+	if endpoint == "" {
+		l.Info("no endpoint specified, MASQUE adapter will use its registered endpoint")
 	} else {
-		// No port specified, assume it's just a host, add port 443
-		masqueEndpoint = net.JoinHostPort(endpoint, "443")
-		l.Debug("Added MASQUE port to endpoint", "from", endpoint, "to", masqueEndpoint)
+		l.Info("using endpoint as MASQUE server", "endpoint", endpoint)
+		if host, _, err := net.SplitHostPort(endpoint); err == nil {
+			masqueEndpoint = net.JoinHostPort(host, "443")
+		} else {
+			masqueEndpoint = net.JoinHostPort(endpoint, "443")
+		}
+		l.Debug("MASQUE endpoint resolved", "endpoint", masqueEndpoint)
 	}
 
 	// Create MASQUE adapter using usque library
