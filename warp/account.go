@@ -26,10 +26,10 @@ func saveIdentity(a Identity, path string) error {
 	return file.Close()
 }
 
-func LoadOrCreateIdentity(l *slog.Logger, path, license string) (*Identity, error) {
+func LoadOrCreateIdentity(l *slog.Logger, path, license, proxyAddr string) (*Identity, error) {
 	l = l.With("subsystem", "warp/account")
 
-	warpAPI := NewWarpAPI(l)
+	warpAPI := NewWarpAPI(l, proxyAddr)
 
 	i, err := LoadIdentity(path)
 	if err != nil {

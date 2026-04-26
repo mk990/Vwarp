@@ -67,7 +67,7 @@ func ExampleWarpAutoRegister() {
 	// 1. Checks if wgcf-identity.json exists
 	// 2. If not, creates new identity and registers
 	// 3. Saves to wgcf-identity.json
-	identity, err := warp.LoadOrCreateIdentity(logger, "./warp_data", "")
+	identity, err := warp.LoadOrCreateIdentity(logger, "./warp_data", "", "")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -82,7 +82,7 @@ func ExampleWarpWithLicense() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	// Automatically updates license if it differs
-	identity, err := warp.LoadOrCreateIdentity(logger, "./warp_data", "your-warp-plus-license")
+	identity, err := warp.LoadOrCreateIdentity(logger, "./warp_data", "your-warp-plus-license", "")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -105,7 +105,7 @@ func ExampleCombinedAutoRegister() {
 		logger.Warn("MASQUE failed, falling back to WireGuard", "error", err)
 
 		// Fallback to WireGuard
-		warpIdentity, err := warp.LoadOrCreateIdentity(logger, "./warp_data", "")
+		warpIdentity, err := warp.LoadOrCreateIdentity(logger, "./warp_data", "", "")
 		if err != nil {
 			log.Fatal("Both MASQUE and WireGuard failed:", err)
 		}

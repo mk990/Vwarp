@@ -113,9 +113,8 @@ type WarpAPI struct {
 	client *http.Client
 }
 
-func NewWarpAPI(l *slog.Logger) *WarpAPI {
-	tlsDialer := Dialer{l: l}
-	// Create a custom HTTP transport
+func NewWarpAPI(l *slog.Logger, proxyAddr string) *WarpAPI {
+	tlsDialer := Dialer{l: l, proxyAddr: proxyAddr}
 	transport := &http.Transport{
 		DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
 			return tlsDialer.TLSDial(network, addr)

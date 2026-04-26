@@ -6,10 +6,12 @@ import (
 	"log/slog"
 	"net"
 	"net/netip"
+	"net/url"
 	"time"
 
 	"github.com/avast/retry-go"
 	"github.com/mk990/Vwarp/iputils"
+	"golang.org/x/net/proxy"
 
 	"github.com/noql-net/certpool"
 	tls "github.com/refraction-networking/utls"
@@ -17,7 +19,27 @@ import (
 
 // Dialer is a struct that holds various options for custom dialing.
 type Dialer struct {
-	l *slog.Logger
+	l         *slog.Logger
+	proxyAddr string // optional SOCKS5 proxy address (e.g. "socks5://127.0.0.1:1080")
+}
+
+// baseDialer returns a net.Dialer-compatible Dial func, going through SOCKS5 if configured.
+func (d *Dialer) baseDialer() func(network, addr string) (net.Conn, error) {
+	if d.proxyAddr == "" {
+		nd := &net.Dialer{Timeout: 5 * time.Second, KeepAlive: 5 * time.Second}
+		return nd.Dial
+	}
+	u, err := url.Parse(d.proxyAddr)
+	if err != nil {
+		nd := &net.Dialer{Timeout: 5 * time.Second, KeepAlive: 5 * time.Second}
+		return nd.Dial
+	}
+	dialer, err := proxy.FromURL(u, proxy.Direct)
+	if err != nil {
+		nd := &net.Dialer{Timeout: 5 * time.Second, KeepAlive: 5 * time.Second}
+		return nd.Dial
+	}
+	return dialer.Dial
 }
 
 const utlsExtensionSNICurve uint16 = 0x15
@@ -122,13 +144,8 @@ func makeTLSHelloPacketWithSNICurve(plainConn net.Conn, config *tls.Config, sni 
 	return utlsConn, nil
 }
 
-func dialCurve(network string, ip netip.Addr, sni string) (net.Conn, error) {
-	plainDialer := &net.Dialer{
-		Timeout:   5 * time.Second,
-		KeepAlive: 5 * time.Second,
-	}
-
-	plainConn, err := plainDialer.Dial(network, netip.AddrPortFrom(ip, 443).String())
+func dialCurve(dialFn func(string, string) (net.Conn, error), network string, ip netip.Addr, sni string) (net.Conn, error) {
+	plainConn, err := dialFn(network, netip.AddrPortFrom(ip, 443).String())
 	if err != nil {
 		return nil, err
 	}
@@ -147,13 +164,8 @@ func dialCurve(network string, ip netip.Addr, sni string) (net.Conn, error) {
 	return tlsConn, nil
 }
 
-func dial2(network string, ip netip.Addr, sni string) (net.Conn, error) {
-	plainDialer := &net.Dialer{
-		Timeout:   5 * time.Second,
-		KeepAlive: 5 * time.Second,
-	}
-
-	plainConn, err := plainDialer.Dial(network, netip.AddrPortFrom(ip, 443).String())
+func dial2(dialFn func(string, string) (net.Conn, error), network string, ip netip.Addr, sni string) (net.Conn, error) {
+	plainConn, err := dialFn(network, netip.AddrPortFrom(ip, 443).String())
 	if err != nil {
 		return nil, err
 	}
@@ -173,13 +185,9 @@ func dial2(network string, ip netip.Addr, sni string) (net.Conn, error) {
 
 	return tlsConn, nil
 }
-func dial3(network string, ip netip.Addr, sni string) (net.Conn, error) {
-	plainDialer := &net.Dialer{
-		Timeout:   5 * time.Second,
-		KeepAlive: 5 * time.Second,
-	}
 
-	plainConn, err := plainDialer.Dial(network, netip.AddrPortFrom(ip, 443).String())
+func dial3(dialFn func(string, string) (net.Conn, error), network string, ip netip.Addr, sni string) (net.Conn, error) {
+	plainConn, err := dialFn(network, netip.AddrPortFrom(ip, 443).String())
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +208,7 @@ func dial3(network string, ip netip.Addr, sni string) (net.Conn, error) {
 	return tlsConn, nil
 }
 
-// TLSDial dials a TLS connection.
+// TLSDial dials a TLS connection, routing through SOCKS5 if proxyAddr is set.
 func (d *Dialer) TLSDial(network, addr string) (net.Conn, error) {
 	sni, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -211,12 +219,13 @@ func (d *Dialer) TLSDial(network, addr string) (net.Conn, error) {
 		return nil, err
 	}
 
+	dialFn := d.baseDialer()
 	var tlsConn net.Conn
 
 	d.l.Info("attempting TLS dial fprint 1")
 	err = retry.Do(
 		func() error {
-			tlsConn, err = dialCurve(network, ip, sni)
+			tlsConn, err = dialCurve(dialFn, network, ip, sni)
 			return err
 		},
 		retry.Attempts(3),
@@ -231,7 +240,7 @@ func (d *Dialer) TLSDial(network, addr string) (net.Conn, error) {
 		d.l.Info("attempting TLS dial fprint 2")
 		err = retry.Do(
 			func() error {
-				tlsConn, err = dial2(network, ip, sni)
+				tlsConn, err = dial2(dialFn, network, ip, sni)
 				return err
 			},
 			retry.Attempts(3),
@@ -247,7 +256,7 @@ func (d *Dialer) TLSDial(network, addr string) (net.Conn, error) {
 		d.l.Info("attempting TLS dial fprint 3")
 		err = retry.Do(
 			func() error {
-				tlsConn, err = dial3(network, ip, sni)
+				tlsConn, err = dial3(dialFn, network, ip, sni)
 				return err
 			},
 			retry.Attempts(3),

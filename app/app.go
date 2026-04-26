@@ -84,7 +84,7 @@ func RunWarp(ctx context.Context, l *slog.Logger, opts WarpOptions) error {
 
 	if opts.Scan != nil {
 		// make primary identity
-		ident, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License)
+		ident, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License, opts.ProxyAddress)
 		if err != nil {
 			l.Error("couldn't load primary warp identity")
 			return err
@@ -220,7 +220,7 @@ func runWireguard(ctx context.Context, l *slog.Logger, opts WarpOptions) error {
 
 func runWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoint string) error {
 	// make primary identity
-	ident, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License)
+	ident, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License, opts.ProxyAddress)
 	if err != nil {
 		l.Error("couldn't load primary warp identity")
 		return err
@@ -304,7 +304,7 @@ func runWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoint str
 func runWarpInWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoints []string) error {
 	atomicNoizeConfig := getAtomicNoizeConfig(opts)
 	// make primary identity
-	ident1, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License)
+	ident1, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License, opts.ProxyAddress)
 	if err != nil {
 		l.Error("couldn't load primary warp identity")
 		return err
@@ -378,7 +378,7 @@ func runWarpInWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoi
 	}
 
 	// make secondary
-	ident2, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "secondary"), opts.License)
+	ident2, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "secondary"), opts.License, opts.ProxyAddress)
 	if err != nil {
 		l.Error("couldn't load secondary warp identity")
 		return err
@@ -434,7 +434,7 @@ func runWarpInWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoi
 
 func runWarpWithPsiphon(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoint string) error {
 	// make primary identity
-	ident, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License)
+	ident, err := warp.LoadOrCreateIdentity(l, path.Join(opts.CacheDir, "primary"), opts.License, opts.ProxyAddress)
 	if err != nil {
 		l.Error("couldn't load primary warp identity")
 		return err
