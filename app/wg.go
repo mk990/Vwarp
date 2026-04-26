@@ -82,7 +82,7 @@ func dnsIndependentConnectivityTest(ctx context.Context, l *slog.Logger, tnet *n
 		conn, err := tnet.DialContext(testCtx, "tcp", addr)
 		cancel()
 		if err != nil {
-			l.Debug("TCP connectivity test failed", "address", addr, "error", err)
+			l.Info("TCP connectivity test failed", "address", addr, "error", err)
 			continue
 		}
 
@@ -205,12 +205,13 @@ func establishWireguard(l *slog.Logger, conf *wiresocks.Configuration, tunDev wg
 		request.WriteString(fmt.Sprintf("preshared_key=%s\n", peer.PreSharedKey))
 		request.WriteString(fmt.Sprintf("endpoint=%s\n", peer.Endpoint))
 
-		// Only set trick if AtomicNoize is not being used
-		if AtomicNoizeConfig == nil {
-			request.WriteString(fmt.Sprintf("trick=%s\n", t))
-		} else {
-			// Set trick to empty/t0 to disable old obfuscation when using AtomicNoize
+		// trick=t1/t2 sends 20-50 random junk packets before each handshake (obfuscation
+		// for direct UDP). When routing through a proxy or using AtomicNoize the junk
+		// consumes the handshake timeout and confuses the proxy relay, so disable it.
+		if AtomicNoizeConfig != nil || proxyAddress != "" {
 			request.WriteString("trick=t0\n")
+		} else {
+			request.WriteString(fmt.Sprintf("trick=%s\n", t))
 		}
 
 		request.WriteString(fmt.Sprintf("reserved=%d,%d,%d\n", peer.Reserved[0], peer.Reserved[1], peer.Reserved[2]))
@@ -274,7 +275,11 @@ func establishWireguard(l *slog.Logger, conf *wiresocks.Configuration, tunDev wg
 		return err
 	}
 
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(15*time.Second))
+	hsTimeout := 30 * time.Second
+	if proxyAddress != "" {
+		hsTimeout = 45 * time.Second // proxy adds round-trip overhead
+	}
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(hsTimeout))
 	defer cancel()
 	if err := waitHandshake(ctx, l, dev); err != nil {
 		dev.BindClose()

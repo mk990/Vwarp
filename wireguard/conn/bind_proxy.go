@@ -140,18 +140,16 @@ func (s *ProxyBind) receiveIPv4(packets [][]byte, sizes []int, eps []Endpoint) (
 		if size < 10 {
 			return 0, nil
 		}
-		destIP := net.IPv4(buf[4], buf[5], buf[6], buf[7])
+		destAddr = netip.AddrFrom4([4]byte{buf[4], buf[5], buf[6], buf[7]})
 		destPort = binary.BigEndian.Uint16(buf[8:10])
 		headerLen = 10
-		destAddr, _ = netip.AddrFromSlice(destIP)
 	} else if atyp == 0x04 {
 		if size < 22 {
 			return 0, nil
 		}
-		destIP := buf[4:20]
+		destAddr = netip.AddrFrom16([16]byte(buf[4:20]))
 		destPort = binary.BigEndian.Uint16(buf[20:22])
 		headerLen = 22
-		destAddr, _ = netip.AddrFromSlice(destIP)
 	} else {
 		return 0, nil
 	}

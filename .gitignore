@@ -15,3 +15,5 @@ stuff/
 test-config.json
 *-config.json
 config-*.json
+resource/
+CLAUDE.md

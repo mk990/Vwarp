@@ -1,14 +1,15 @@
 module github.com/voidr3aper-anon/Vwarp
 
-go 1.24.1
-
-toolchain go1.24.6
+go 1.26
 
 // +build android
 replace github.com/eycorsican/go-tun2socks => github.com/trojan-gfw/go-tun2socks v1.16.3-0.20210702214000-083d49176e05
 
 // Fix Linux netlink compatibility with newer version
 replace github.com/tailscale/netlink => github.com/tailscale/netlink v1.1.1-0.20240822203006-4d49adab4de7
+
+// Patch psiphon-tls for Go 1.26 tls.ConnectionState struct changes (CurveID field added, HelloRetryRequest made public)
+replace github.com/Psiphon-Labs/psiphon-tls => ./patches/psiphon-tls
 
 require (
 	github.com/Diniboy1123/connect-ip-go v0.0.0-20251011145655-7be32d5976d9
@@ -32,9 +33,9 @@ require (
 	github.com/sagernet/sing v0.7.13
 	github.com/songgao/water v0.0.0-20200317203138-2b4b6d7c09d8
 	github.com/yosida95/uritemplate/v3 v3.0.2
-	golang.org/x/crypto v0.43.0
-	golang.org/x/net v0.46.0
-	golang.org/x/sys v0.37.0
+	golang.org/x/crypto v0.49.0
+	golang.org/x/net v0.52.0
+	golang.org/x/sys v0.42.0
 )
 
 require (
@@ -77,6 +78,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grafov/m3u8 v0.0.0-20171211212457-6ab8f28ed427 // indirect
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/josharian/native v1.1.1-0.20230202152459-5c7d0dd6ab86 // indirect
 	github.com/jsimonetti/rtnetlink v1.3.5 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
@@ -119,11 +121,15 @@ require (
 	github.com/sergeyfrolov/bsbuffer v0.0.0-20180903213811-94e85abb8507 // indirect
 	github.com/shadowsocks/go-shadowsocks2 v0.1.5 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/stretchr/testify v1.11.0 // indirect
+	github.com/spf13/cobra v1.10.1 // indirect
+	github.com/spf13/pflag v1.0.10 // indirect
+	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635 // indirect
 	github.com/tailscale/goupnp v1.0.1-0.20210804011211-c64d0f06ea05 // indirect
 	github.com/tailscale/netlink v1.1.1-0.20240822203006-4d49adab4de7 // indirect
+	github.com/things-go/go-socks5 v0.1.0 // indirect
 	github.com/v2pro/plz v0.0.0-20221028024117-e5f9aec5b631 // indirect
+	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
@@ -131,17 +137,17 @@ require (
 	gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/goptlib v1.5.0 // indirect
 	go4.org/mem v0.0.0-20220726221520-4f986261bf13 // indirect
 	go4.org/netipx v0.0.0-20230824141953-6213f710f925 // indirect
-	golang.org/x/exp v0.0.0-20240506185415-9bf2ced13842 // indirect
-	golang.org/x/mod v0.29.0 // indirect
-	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-	golang.org/x/time v0.14.0 // indirect
-	golang.org/x/tools v0.38.0 // indirect
+	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
+	golang.org/x/mod v0.34.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/time v0.15.0 // indirect
+	golang.org/x/tools v0.43.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb // indirect
 	golang.zx2c4.com/wireguard/windows v0.5.3 // indirect
 	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20251011013117-af7a19336e55 // indirect
+	gvisor.dev/gvisor v0.0.0-20260408064518-65a410b0d584 // indirect
 	tailscale.com v1.58.2 // indirect
 )

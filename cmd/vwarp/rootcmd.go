@@ -314,15 +314,11 @@ func (c *rootConfig) exec(ctx context.Context, args []string) error {
 		opts.Scan = &wiresocks.ScanOptions{V4: c.v4, V6: c.v6, MaxRTT: c.rtt}
 	}
 
-	// If the endpoint is not set, choose a random endpoint
-	if opts.Endpoint == "" {
-		var addrPort netip.AddrPort
-		var err error
-
-		// Use WireGuard endpoints for both WARP and MASQUE scanning
-		// MASQUE will convert port 2408 -> 443 in runWarpWithMasque
-		addrPort, err = warp.RandomWarpEndpoint(c.v4, c.v6)
-
+	// If the endpoint is not set and we need one for scanning (MASQUE/scan modes),
+	// pick a random WARP endpoint. For normal WireGuard mode, app.go will use the
+	// API-provided endpoint from the registered identity instead.
+	if opts.Endpoint == "" && c.scan {
+		addrPort, err := warp.RandomWarpEndpoint(c.v4, c.v6)
 		if err != nil {
 			fatal(l, err)
 		}
@@ -401,7 +397,7 @@ func (c *rootConfig) buildUnifiedNoizeConfig(uc *config.UnifiedConfig) *noize.Un
 	}
 
 	// Fall back to CLI flags if no config file or no noize in config file
-	if !c.noize && c.noizePreset == "" {
+	if !c.noize {
 		return nil
 	}
 

@@ -236,38 +236,34 @@ func (n *Noize) ObfuscateWrite(packet []byte, addr *net.UDPAddr) ([]byte, error)
 		go n.executePreHandshake(addr)
 	}
 
-	// Handle Initial packets specially (in addition to first packet logic above)
-	if packetType == QUICInitial {
-		if n.config.FragmentInitial && n.config.FragmentSize > 0 && len(packet) > n.config.FragmentSize {
-			return n.fragmentInitialPacket(packet, addr), nil
+	// QUIC packets (Initial, Handshake, 0-RTT, 1-RTT, Retry) must be passed through
+	// completely unmodified. QUIC frames have precise length fields; appending padding
+	// or fragmenting at the UDP level corrupts the TLS ClientHello inside the Initial
+	// packet and causes a remote handshake_failure.
+	// Obfuscation is achieved only by the junk datagrams sent via executePreHandshake /
+	// executePostHandshake on the underlying conn — never by touching real QUIC bytes.
+	if packetType != QUICUnknown {
+		if packetType == QUIC1RTT {
+			n.mu.Lock()
+			state := n.hsState[addrKey]
+			if state != nil && !state.postSent {
+				state.postSent = true
+				n.mu.Unlock()
+				go n.executePostHandshake(addr)
+			} else {
+				n.mu.Unlock()
+			}
 		}
+		n.applyDelay()
+		return packet, nil
 	}
 
-	// Skip post-handshake junk packets for 1-RTT packets
-	// (These are sent after tunnel is established and should be clean)
-	if packetType == QUIC1RTT {
-		n.mu.Lock()
-		state := n.hsState[addrKey]
-		if state != nil && !state.postSent {
-			state.postSent = true
-			n.mu.Unlock()
-			go n.executePostHandshake(addr)
-		} else {
-			n.mu.Unlock()
-		}
-	}
-
-	// Apply padding
+	// Non-QUIC packets (e.g. the "init" trigger): apply padding/protocol wrapper freely.
 	packet = n.addPadding(packet)
-
-	// Apply protocol wrapper
 	if n.config.MimicProtocol != "" {
 		packet = n.wrapProtocol(packet, packetType)
 	}
-
-	// Apply random delay
 	n.applyDelay()
-
 	return packet, nil
 }
 

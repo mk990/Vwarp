@@ -192,8 +192,12 @@ func runWireguard(ctx context.Context, l *slog.Logger, opts WarpOptions) error {
 			continue
 		}
 
-		// Test wireguard connectivity
-		werr = usermodeTunTest(ctx, l, tnet, opts.TestURL)
+		// Test wireguard connectivity: try direct IPs first (DNS-independent), then URL
+		werr = dnsIndependentConnectivityTest(ctx, l, tnet)
+		if werr != nil {
+			l.Warn("direct-IP connectivity failed, retrying with URL test", "error", werr)
+			werr = usermodeTunTest(ctx, l, tnet, opts.TestURL)
+		}
 		if werr != nil {
 			continue
 		}
@@ -230,9 +234,16 @@ func runWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoint str
 	// Set up DNS Address
 	conf.Interface.DNS = []netip.Addr{opts.DnsAddr}
 
+	// Resolve the endpoint: prefer explicit override, then identity API endpoint
+	resolvedEndpoint := endpoint
+	if resolvedEndpoint == "" {
+		resolvedEndpoint = identityEndpoint(ident)
+		l.Info("using identity endpoint", "endpoint", resolvedEndpoint)
+	}
+
 	// Enable trick and keepalive on all peers in config
 	for i, peer := range conf.Peers {
-		peer.Endpoint = endpoint
+		peer.Endpoint = resolvedEndpoint
 		// Only enable old trick functionality if AtomicNoize is not being used
 		if opts.AtomicNoizeConfig == nil {
 			peer.Trick = true
@@ -265,8 +276,12 @@ func runWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoint str
 			continue
 		}
 
-		// Test wireguard connectivity
-		werr = usermodeTunTest(ctx, l, tnet, opts.TestURL)
+		// Test wireguard connectivity: try direct IPs first (DNS-independent), then URL
+		werr = dnsIndependentConnectivityTest(ctx, l, tnet)
+		if werr != nil {
+			l.Warn("direct-IP connectivity failed, retrying with URL test", "error", werr)
+			werr = usermodeTunTest(ctx, l, tnet, opts.TestURL)
+		}
 		if werr != nil {
 			continue
 		}
@@ -302,9 +317,16 @@ func runWarpInWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoi
 	// Set up DNS Address
 	conf.Interface.DNS = []netip.Addr{opts.DnsAddr}
 
+	// Resolve outer endpoint
+	outerEndpoint := endpoints[0]
+	if outerEndpoint == "" {
+		outerEndpoint = identityEndpoint(ident1)
+		l.Info("using identity endpoint for outer warp", "endpoint", outerEndpoint)
+	}
+
 	// Enable trick and keepalive on all peers in config
 	for i, peer := range conf.Peers {
-		peer.Endpoint = endpoints[0]
+		peer.Endpoint = outerEndpoint
 		// Only enable old trick functionality if AtomicNoize is not being used
 		if opts.AtomicNoizeConfig == nil {
 			peer.Trick = true
@@ -350,7 +372,7 @@ func runWarpInWarp(ctx context.Context, l *slog.Logger, opts WarpOptions, endpoi
 	}
 
 	// Create a UDP port forward between localhost and the remote endpoint
-	addr, err := wiresocks.NewVtunUDPForwarder(ctx, netip.MustParseAddrPort("127.0.0.1:0"), endpoints[0], tnet1, singleMTU)
+	addr, err := wiresocks.NewVtunUDPForwarder(ctx, netip.MustParseAddrPort("127.0.0.1:0"), outerEndpoint, tnet1, singleMTU)
 	if err != nil {
 		return err
 	}
@@ -426,9 +448,16 @@ func runWarpWithPsiphon(ctx context.Context, l *slog.Logger, opts WarpOptions, e
 	// Set up DNS Address
 	conf.Interface.DNS = []netip.Addr{opts.DnsAddr}
 
+	// Resolve endpoint
+	resolvedEndpoint := endpoint
+	if resolvedEndpoint == "" {
+		resolvedEndpoint = identityEndpoint(ident)
+		l.Info("using identity endpoint", "endpoint", resolvedEndpoint)
+	}
+
 	// Enable trick and keepalive on all peers in config
 	for i, peer := range conf.Peers {
-		peer.Endpoint = endpoint
+		peer.Endpoint = resolvedEndpoint
 		// Only enable old trick functionality if AtomicNoize is not being used
 		if opts.AtomicNoizeConfig == nil {
 			peer.Trick = true
@@ -721,6 +750,24 @@ func runWarpWithMasque(ctx context.Context, l *slog.Logger, opts WarpOptions, en
 	// Keep running until context is cancelled
 	<-ctx.Done()
 	return nil
+}
+
+// identityEndpoint returns the best endpoint from an identity's API data.
+// It prefers the V4 direct IP with port from the ports list over the DNS hostname.
+func identityEndpoint(ident *warp.Identity) string {
+	ep := ident.Config.Peers[0].Endpoint
+	if ep.V4 != "" {
+		if ap, err := netip.ParseAddrPort(ep.V4); err == nil {
+			port := ap.Port()
+			if port == 0 && len(ep.Ports) > 0 {
+				port = ep.Ports[0]
+			}
+			if port != 0 {
+				return netip.AddrPortFrom(ap.Addr(), port).String()
+			}
+		}
+	}
+	return ep.Host
 }
 
 func generateWireguardConfig(i *warp.Identity) wiresocks.Configuration {
