@@ -1,4 +1,8 @@
-FROM golang:1.26-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
 
 RUN apk add --no-cache git
 
@@ -10,7 +14,8 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 go build -ldflags="-checklinkname=0 -s -w" -o /vwarp ./cmd/vwarp
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOARM=${TARGETVARIANT#v} \
+    go build -ldflags="-checklinkname=0 -s -w" -o /vwarp ./cmd/vwarp
 
 FROM alpine:3.21
 
